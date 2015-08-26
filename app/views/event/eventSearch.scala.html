@@ -1,0 +1,53 @@
+@(eventForm: Form[EventForm], events: List[Tables.EventRow])
+
+@import helper.twitterBootstrap._
+
+@main("イベント検索") {
+  <ul class="nav nav-tabs">
+    <li class="active">
+      <a href="#" data-toggle="tab">検索</a>
+    </li>
+    <li>
+      <a href="@controllers.event.routes.EventCreate.index()" data-toggle="tab">登録</a>
+    </li>
+  </ul>
+  @helper.form(action = controllers.event.routes.EventSearch.search()){
+    <div class="container">
+      <fieldset>
+        <legend>イベントの情報</legend>
+        @helper.inputText(eventForm("eventId"))
+        @helper.inputText(eventForm("eventNm"))
+        <button type="submit" class="btn btn-primary">検索</button>
+      </fieldset>
+
+      @if(events) {
+        <legend>イベント一覧</legend>
+        <table class="table table-striped table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>イベントID</th>
+              <th>イベント名</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for((event) <- events){
+              <tr>
+                <td>@event.eventId</td>
+                <td>@event.eventNm</td>
+                <td>
+                  <a href="@controllers.event.routes.EventUpdate.index(event.id)">
+                    <i class="glyphicon glyphicon-edit"></i>
+                  </a>
+                  <a href="@controllers.event.routes.EventSearch.delete(event.id)">
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+}
