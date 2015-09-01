@@ -14,7 +14,7 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema = Companies.schema ++ Users.schema
+  lazy val schema = Companies.schema ++ HostBranch.schema ++ HostMachine.schema ++ Users.schema
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -40,6 +40,61 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table Companies */
   lazy val Companies = new TableQuery(tag => new Companies(tag))
+
+  /** Entity class storing rows of table HostBranch
+   *  @param id Database column id SqlType(BIGINT UNSIGNED), AutoInc, PrimaryKey
+   *  @param branchName Database column branch_name SqlType(VARCHAR), Length(128,true), Default(None)
+   *  @param hostMachineId Database column host_machine_id SqlType(INT) */
+  case class HostBranchRow(id: Long, branchName: Option[String] = None, hostMachineId: Int)
+  /** GetResult implicit for fetching HostBranchRow objects using plain SQL queries */
+  implicit def GetResultHostBranchRow(implicit e0: GR[Long], e1: GR[Option[String]], e2: GR[Int]): GR[HostBranchRow] = GR{
+    prs => import prs._
+    HostBranchRow.tupled((<<[Long], <<?[String], <<[Int]))
+  }
+  /** Table description of table host_branch. Objects of this class serve as prototypes for rows in queries. */
+  class HostBranch(_tableTag: Tag) extends Table[HostBranchRow](_tableTag, "host_branch") {
+    def * = (id, branchName, hostMachineId) <> (HostBranchRow.tupled, HostBranchRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), branchName, Rep.Some(hostMachineId)).shaped.<>({r=>import r._; _1.map(_=> HostBranchRow.tupled((_1.get, _2, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column id SqlType(BIGINT UNSIGNED), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column branch_name SqlType(VARCHAR), Length(128,true), Default(None) */
+    val branchName: Rep[Option[String]] = column[Option[String]]("branch_name", O.Length(128,varying=true), O.Default(None))
+    /** Database column host_machine_id SqlType(INT) */
+    val hostMachineId: Rep[Int] = column[Int]("host_machine_id")
+
+    /** Uniqueness Index over (hostMachineId) (database name host_branch_host_machine_id_key) */
+    val index1 = index("host_branch_host_machine_id_key", hostMachineId, unique=true)
+  }
+  /** Collection-like TableQuery object for table HostBranch */
+  lazy val HostBranch = new TableQuery(tag => new HostBranch(tag))
+
+  /** Entity class storing rows of table HostMachine
+   *  @param id Database column id SqlType(BIGINT UNSIGNED), AutoInc, PrimaryKey
+   *  @param name Database column name SqlType(VARCHAR), Length(64,true) */
+  case class HostMachineRow(id: Long, name: String)
+  /** GetResult implicit for fetching HostMachineRow objects using plain SQL queries */
+  implicit def GetResultHostMachineRow(implicit e0: GR[Long], e1: GR[String]): GR[HostMachineRow] = GR{
+    prs => import prs._
+    HostMachineRow.tupled((<<[Long], <<[String]))
+  }
+  /** Table description of table host_machine. Objects of this class serve as prototypes for rows in queries. */
+  class HostMachine(_tableTag: Tag) extends Table[HostMachineRow](_tableTag, "host_machine") {
+    def * = (id, name) <> (HostMachineRow.tupled, HostMachineRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), Rep.Some(name)).shaped.<>({r=>import r._; _1.map(_=> HostMachineRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column id SqlType(BIGINT UNSIGNED), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column name SqlType(VARCHAR), Length(64,true) */
+    val name: Rep[String] = column[String]("name", O.Length(64,varying=true))
+
+    /** Uniqueness Index over (name) (database name host_machine_name_key) */
+    val index1 = index("host_machine_name_key", name, unique=true)
+  }
+  /** Collection-like TableQuery object for table HostMachine */
+  lazy val HostMachine = new TableQuery(tag => new HostMachine(tag))
 
   /** Entity class storing rows of table Users
    *  @param id Database column ID SqlType(BIGINT), AutoInc, PrimaryKey

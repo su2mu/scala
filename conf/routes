@@ -8,10 +8,7 @@ GET     /generate                   controllers.Application.generate
 
 # User
 GET         /user/list              controllers.UserController.list
-GET         /user/edit              controllers.UserController.edit(id: Option[Long] ?= None)
-POST        /user/create            controllers.UserController.create
-POST        /user/update            controllers.UserController.update
-POST        /user/remove/:id        controllers.UserController.remove(id: Long)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
