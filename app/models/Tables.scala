@@ -14,114 +14,111 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema = Companies.schema ++ HostBranch.schema ++ HostMachine.schema ++ Users.schema
+  lazy val schema = Customers.schema ++ Items.schema ++ Orderings.schema
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
-  /** Entity class storing rows of table Companies
-   *  @param id Database column ID SqlType(BIGINT), AutoInc, PrimaryKey
-   *  @param name Database column NAME SqlType(VARCHAR), Length(255,true) */
-  case class CompaniesRow(id: Long, name: String)
-  /** GetResult implicit for fetching CompaniesRow objects using plain SQL queries */
-  implicit def GetResultCompaniesRow(implicit e0: GR[Long], e1: GR[String]): GR[CompaniesRow] = GR{
+  /** Entity class storing rows of table Customers
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   *  @param name Database column name SqlType(VARCHAR), Length(64,true)
+   *  @param email Database column email SqlType(VARCHAR), Length(64,true)
+   *  @param tel Database column tel SqlType(VARCHAR), Length(64,true)
+   *  @param address Database column address SqlType(VARCHAR), Length(64,true)
+   *  @param comment Database column comment SqlType(VARCHAR), Length(64,true) */
+  case class CustomersRow(id: Long, name: String, email: String, tel: String, address: String, comment: String)
+  /** GetResult implicit for fetching CustomersRow objects using plain SQL queries */
+  implicit def GetResultCustomersRow(implicit e0: GR[Long], e1: GR[String]): GR[CustomersRow] = GR{
     prs => import prs._
-    CompaniesRow.tupled((<<[Long], <<[String]))
+    CustomersRow.tupled((<<[Long], <<[String], <<[String], <<[String], <<[String], <<[String]))
   }
-  /** Table description of table companies. Objects of this class serve as prototypes for rows in queries. */
-  class Companies(_tableTag: Tag) extends Table[CompaniesRow](_tableTag, "companies") {
-    def * = (id, name) <> (CompaniesRow.tupled, CompaniesRow.unapply)
+  /** Table description of table customers. Objects of this class serve as prototypes for rows in queries. */
+  class Customers(_tableTag: Tag) extends Table[CustomersRow](_tableTag, "customers") {
+    def * = (id, name, email, tel, address, comment) <> (CustomersRow.tupled, CustomersRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(name)).shaped.<>({r=>import r._; _1.map(_=> CompaniesRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(name), Rep.Some(email), Rep.Some(tel), Rep.Some(address), Rep.Some(comment)).shaped.<>({r=>import r._; _1.map(_=> CustomersRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column ID SqlType(BIGINT), AutoInc, PrimaryKey */
-    val id: Rep[Long] = column[Long]("ID", O.AutoInc, O.PrimaryKey)
-    /** Database column NAME SqlType(VARCHAR), Length(255,true) */
-    val name: Rep[String] = column[String]("NAME", O.Length(255,varying=true))
-  }
-  /** Collection-like TableQuery object for table Companies */
-  lazy val Companies = new TableQuery(tag => new Companies(tag))
-
-  /** Entity class storing rows of table HostBranch
-   *  @param id Database column id SqlType(BIGINT UNSIGNED), AutoInc, PrimaryKey
-   *  @param branchName Database column branch_name SqlType(VARCHAR), Length(128,true), Default(None)
-   *  @param hostMachineId Database column host_machine_id SqlType(INT) */
-  case class HostBranchRow(id: Long, branchName: Option[String] = None, hostMachineId: Int)
-  /** GetResult implicit for fetching HostBranchRow objects using plain SQL queries */
-  implicit def GetResultHostBranchRow(implicit e0: GR[Long], e1: GR[Option[String]], e2: GR[Int]): GR[HostBranchRow] = GR{
-    prs => import prs._
-    HostBranchRow.tupled((<<[Long], <<?[String], <<[Int]))
-  }
-  /** Table description of table host_branch. Objects of this class serve as prototypes for rows in queries. */
-  class HostBranch(_tableTag: Tag) extends Table[HostBranchRow](_tableTag, "host_branch") {
-    def * = (id, branchName, hostMachineId) <> (HostBranchRow.tupled, HostBranchRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), branchName, Rep.Some(hostMachineId)).shaped.<>({r=>import r._; _1.map(_=> HostBranchRow.tupled((_1.get, _2, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column id SqlType(BIGINT UNSIGNED), AutoInc, PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
-    /** Database column branch_name SqlType(VARCHAR), Length(128,true), Default(None) */
-    val branchName: Rep[Option[String]] = column[Option[String]]("branch_name", O.Length(128,varying=true), O.Default(None))
-    /** Database column host_machine_id SqlType(INT) */
-    val hostMachineId: Rep[Int] = column[Int]("host_machine_id")
-
-    /** Uniqueness Index over (hostMachineId) (database name host_branch_host_machine_id_key) */
-    val index1 = index("host_branch_host_machine_id_key", hostMachineId, unique=true)
-  }
-  /** Collection-like TableQuery object for table HostBranch */
-  lazy val HostBranch = new TableQuery(tag => new HostBranch(tag))
-
-  /** Entity class storing rows of table HostMachine
-   *  @param id Database column id SqlType(BIGINT UNSIGNED), AutoInc, PrimaryKey
-   *  @param name Database column name SqlType(VARCHAR), Length(64,true) */
-  case class HostMachineRow(id: Long, name: String)
-  /** GetResult implicit for fetching HostMachineRow objects using plain SQL queries */
-  implicit def GetResultHostMachineRow(implicit e0: GR[Long], e1: GR[String]): GR[HostMachineRow] = GR{
-    prs => import prs._
-    HostMachineRow.tupled((<<[Long], <<[String]))
-  }
-  /** Table description of table host_machine. Objects of this class serve as prototypes for rows in queries. */
-  class HostMachine(_tableTag: Tag) extends Table[HostMachineRow](_tableTag, "host_machine") {
-    def * = (id, name) <> (HostMachineRow.tupled, HostMachineRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(name)).shaped.<>({r=>import r._; _1.map(_=> HostMachineRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column id SqlType(BIGINT UNSIGNED), AutoInc, PrimaryKey */
+    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
     val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
     /** Database column name SqlType(VARCHAR), Length(64,true) */
     val name: Rep[String] = column[String]("name", O.Length(64,varying=true))
-
-    /** Uniqueness Index over (name) (database name host_machine_name_key) */
-    val index1 = index("host_machine_name_key", name, unique=true)
+    /** Database column email SqlType(VARCHAR), Length(64,true) */
+    val email: Rep[String] = column[String]("email", O.Length(64,varying=true))
+    /** Database column tel SqlType(VARCHAR), Length(64,true) */
+    val tel: Rep[String] = column[String]("tel", O.Length(64,varying=true))
+    /** Database column address SqlType(VARCHAR), Length(64,true) */
+    val address: Rep[String] = column[String]("address", O.Length(64,varying=true))
+    /** Database column comment SqlType(VARCHAR), Length(64,true) */
+    val comment: Rep[String] = column[String]("comment", O.Length(64,varying=true))
   }
-  /** Collection-like TableQuery object for table HostMachine */
-  lazy val HostMachine = new TableQuery(tag => new HostMachine(tag))
+  /** Collection-like TableQuery object for table Customers */
+  lazy val Customers = new TableQuery(tag => new Customers(tag))
 
-  /** Entity class storing rows of table Users
-   *  @param id Database column ID SqlType(BIGINT), AutoInc, PrimaryKey
-   *  @param companyId Database column COMPANY_ID SqlType(BIGINT), Default(None)
-   *  @param name Database column NAME SqlType(VARCHAR), Length(255,true), Default(None) */
-  case class UsersRow(id: Long, companyId: Option[Long] = None, name: Option[String] = None)
-  /** GetResult implicit for fetching UsersRow objects using plain SQL queries */
-  implicit def GetResultUsersRow(implicit e0: GR[Long], e1: GR[Option[Long]], e2: GR[Option[String]]): GR[UsersRow] = GR{
+  /** Entity class storing rows of table Items
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   *  @param name Database column name SqlType(VARCHAR), Length(64,true)
+   *  @param price Database column price SqlType(BIGINT)
+   *  @param comment Database column comment SqlType(VARCHAR), Length(64,true) */
+  case class ItemsRow(id: Long, name: String, price: Long, comment: String)
+  /** GetResult implicit for fetching ItemsRow objects using plain SQL queries */
+  implicit def GetResultItemsRow(implicit e0: GR[Long], e1: GR[String]): GR[ItemsRow] = GR{
     prs => import prs._
-    UsersRow.tupled((<<[Long], <<?[Long], <<?[String]))
+    ItemsRow.tupled((<<[Long], <<[String], <<[Long], <<[String]))
   }
-  /** Table description of table users. Objects of this class serve as prototypes for rows in queries. */
-  class Users(_tableTag: Tag) extends Table[UsersRow](_tableTag, "users") {
-    def * = (id, companyId, name) <> (UsersRow.tupled, UsersRow.unapply)
+  /** Table description of table items. Objects of this class serve as prototypes for rows in queries. */
+  class Items(_tableTag: Tag) extends Table[ItemsRow](_tableTag, "items") {
+    def * = (id, name, price, comment) <> (ItemsRow.tupled, ItemsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), companyId, name).shaped.<>({r=>import r._; _1.map(_=> UsersRow.tupled((_1.get, _2, _3)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(name), Rep.Some(price), Rep.Some(comment)).shaped.<>({r=>import r._; _1.map(_=> ItemsRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column ID SqlType(BIGINT), AutoInc, PrimaryKey */
-    val id: Rep[Long] = column[Long]("ID", O.AutoInc, O.PrimaryKey)
-    /** Database column COMPANY_ID SqlType(BIGINT), Default(None) */
-    val companyId: Rep[Option[Long]] = column[Option[Long]]("COMPANY_ID", O.Default(None))
-    /** Database column NAME SqlType(VARCHAR), Length(255,true), Default(None) */
-    val name: Rep[Option[String]] = column[Option[String]]("NAME", O.Length(255,varying=true), O.Default(None))
-
-    /** Foreign key referencing Companies (database name users_ibfk_1) */
-    lazy val companiesFk = foreignKey("users_ibfk_1", companyId, Companies)(r => Rep.Some(r.id), onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column name SqlType(VARCHAR), Length(64,true) */
+    val name: Rep[String] = column[String]("name", O.Length(64,varying=true))
+    /** Database column price SqlType(BIGINT) */
+    val price: Rep[Long] = column[Long]("price")
+    /** Database column comment SqlType(VARCHAR), Length(64,true) */
+    val comment: Rep[String] = column[String]("comment", O.Length(64,varying=true))
   }
-  /** Collection-like TableQuery object for table Users */
-  lazy val Users = new TableQuery(tag => new Users(tag))
+  /** Collection-like TableQuery object for table Items */
+  lazy val Items = new TableQuery(tag => new Items(tag))
+
+  /** Entity class storing rows of table Orderings
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   *  @param customerId Database column customer_id SqlType(BIGINT)
+   *  @param itemId Database column item_id SqlType(BIGINT)
+   *  @param itemCount Database column item_count SqlType(BIGINT)
+   *  @param comment Database column comment SqlType(VARCHAR), Length(61,true)
+   *  @param createAt Database column create_at SqlType(BIGINT) */
+  case class OrderingsRow(id: Long, customerId: Long, itemId: Long, itemCount: Long, comment: String, createAt: Long)
+  /** GetResult implicit for fetching OrderingsRow objects using plain SQL queries */
+  implicit def GetResultOrderingsRow(implicit e0: GR[Long], e1: GR[String]): GR[OrderingsRow] = GR{
+    prs => import prs._
+    OrderingsRow.tupled((<<[Long], <<[Long], <<[Long], <<[Long], <<[String], <<[Long]))
+  }
+  /** Table description of table orderings. Objects of this class serve as prototypes for rows in queries. */
+  class Orderings(_tableTag: Tag) extends Table[OrderingsRow](_tableTag, "orderings") {
+    def * = (id, customerId, itemId, itemCount, comment, createAt) <> (OrderingsRow.tupled, OrderingsRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), Rep.Some(customerId), Rep.Some(itemId), Rep.Some(itemCount), Rep.Some(comment), Rep.Some(createAt)).shaped.<>({r=>import r._; _1.map(_=> OrderingsRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column customer_id SqlType(BIGINT) */
+    val customerId: Rep[Long] = column[Long]("customer_id")
+    /** Database column item_id SqlType(BIGINT) */
+    val itemId: Rep[Long] = column[Long]("item_id")
+    /** Database column item_count SqlType(BIGINT) */
+    val itemCount: Rep[Long] = column[Long]("item_count")
+    /** Database column comment SqlType(VARCHAR), Length(61,true) */
+    val comment: Rep[String] = column[String]("comment", O.Length(61,varying=true))
+    /** Database column create_at SqlType(BIGINT) */
+    val createAt: Rep[Long] = column[Long]("create_at")
+
+    /** Foreign key referencing Customers (database name orderings_ibfk_1) */
+    lazy val customersFk = foreignKey("orderings_ibfk_1", customerId, Customers)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Items (database name orderings_ibfk_2) */
+    lazy val itemsFk = foreignKey("orderings_ibfk_2", itemId, Items)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table Orderings */
+  lazy val Orderings = new TableQuery(tag => new Orderings(tag))
 }

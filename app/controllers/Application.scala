@@ -15,7 +15,7 @@ class Application extends Controller {
   def generate = Action {
     val slickDriver = "slick.driver.MySQLDriver"
     val jdbcDriver = "com.mysql.jdbc.Driver"
-    val url = "jdbc:mysql://localhost:3306/play2?characterEncoding=UTF-8"
+    val url = "jdbc:mysql://localhost:3306/play3?characterEncoding=UTF-8"
     val outputFolder = "app"
     val pkg = "models"
     val user ="root"

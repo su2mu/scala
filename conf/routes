@@ -6,9 +6,13 @@
 GET     /                           controllers.Application.index
 GET     /generate                   controllers.Application.generate
 
-# User
-GET         /user/list              controllers.UserController.list
-
+# Customers Management
+GET     /customers/create           controllers.CustomerController.showCreateForm()
+POST    /customers/create           controllers.CustomerController.create()
+GET     /customers/search           controllers.CustomerController.search(word: String ?= "")
+GET     /customers/:id/update       controllers.CustomerController.showUpdateForm(id: Long)
+POST    /customers/:id/update       controllers.CustomerController.update(id: Long)
+GET     /customers/:id/remove       controllers.CustomerController.remove(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

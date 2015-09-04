@@ -1,4 +1,4 @@
-package dao
+package daos
 
 import scala.concurrent.Future
 import slick.driver.MySQLDriver.api._
@@ -10,9 +10,9 @@ import play.api.db.slick.HasDatabaseConfigProvider
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.driver.JdbcProfile
 
-class UserDao extends AbstractDao[UsersRow, Users, Long] {
+class ItemDao extends AbstractDao[ItemsRow, Items, Long] {
 
-  override val table = TableQuery[Users]
+  override val table = TableQuery[Items]
   override def filterQuery(id: Long) = table.filter(_.id === id)
 
 }

@@ -1,4 +1,4 @@
-package dao
+package daos
 
 import slick.driver.MySQLDriver.api._
  
