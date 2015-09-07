@@ -52,7 +52,20 @@
               </tr>
             </thead>
             <tbody>
-           
+           @customers.map { customer =>
+              <tr>
+                <td align="right">@("%9d".format(customer.id))</td>
+                <td>@customer.name</td>
+                <td>@customer.email</td>
+                <td>@customer.tel</td>
+                <td>@customer.address</td>
+                <td>@customer.comment</td>
+                <td align="center">
+                  <a href="/customers/@customer.id/update" class="btn btn-primary">更新</a>
+                  <input type="button" class="btn btn-danger" value="削除" onClick='if(confirm("本当に削除してよろしいですか？")) {location.href="/customers/@customer.id/remove"}'>
+                </td>
+              </tr>
+            }
             </tbody>
           </table>
         </div>

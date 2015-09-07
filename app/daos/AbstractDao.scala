@@ -14,8 +14,8 @@ abstract class AbstractDao[E, T <: Table[E], K] {
   def fetchAll() =
     db.run(table.result)
  
-  def fetchById(id: K): Future[Seq[E]] =
-    db.run(filterQuery(id).result)
+  def fetchById(id: K): Future[E] =
+    db.run(filterQuery(id).result).map(_.head)
  
   def fetchOneById(id: K): Future[Option[E]] =
     db.run(filterQuery(id).result).map(_.headOption)
