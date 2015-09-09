@@ -14,5 +14,20 @@ GET     /customers/:id/update       controllers.CustomerController.showUpdateFor
 POST    /customers/:id/update       controllers.CustomerController.update(id: Long)
 GET     /customers/:id/remove       controllers.CustomerController.remove(id: Long)
 
+# Items Management
+GET     /items/create               controllers.ItemController.showCreateForm()
+POST    /items/create               controllers.ItemController.create()
+GET     /items/search               controllers.ItemController.search(word: String ?= "")
+GET     /items/:id/update           controllers.ItemController.showUpdateForm(id: Long)
+POST    /items/:id/update           controllers.ItemController.update(id: Long)
+GET     /items/:id/remove           controllers.ItemController.remove(id: Long)
+
+# Orderings Management
+GET     /orderings/create           controllers.OrderingController.showCreateForm()
+POST    /orderings/create           controllers.OrderingController.create()
+GET     /orderings/search           controllers.OrderingController.search(word: String ?= "")
+GET     /orderings/:id/remove       controllers.OrderingController.remove(id: Long)
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

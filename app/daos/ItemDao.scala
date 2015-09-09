@@ -15,4 +15,8 @@ class ItemDao extends AbstractDao[ItemsRow, Items, Long] {
   override val table = TableQuery[Items]
   override def filterQuery(id: Long) = table.filter(_.id === id)
 
+    def search(word: String): Future[Seq[ItemsRow]] = {
+      db.run(table.filter(_.name like "%" + word + "%").result)
+  }
+  
 }
